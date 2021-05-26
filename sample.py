@@ -1,7 +1,7 @@
 def func():
     x = 3
     def value(v):
-        nonlocal x
+        nonlocal x #束縛された変数の値をあとから更新．
         x = v
 
     def add(y):
