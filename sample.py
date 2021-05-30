@@ -104,8 +104,6 @@ class TSP:
         print('近傍探索適用後の総移動距離 = {}'.format(total_distance))
 def main():
     my_tsp = TSP(city_xy)
-    order = list(np.random.permutation(N))
-    #my_tsp.visualize_visit_order(order, city_xy)
     my_tsp.solver()
 if __name__ == "__main__":
     main()
