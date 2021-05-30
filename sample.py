@@ -2,29 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
-N = 20
-MAP_SIZE = 100
-
-np.random.seed(10)
-city_xy = np.random.rand(N, 2) * MAP_SIZE
-
-# plt.figure(figsize=(4,4))
-# plt.plot(city_xy[:,0], city_xy[:,1], 'o')
-# plt.show()
-
-class TSP:
+class TSP: #city(到達地点のx,y座標を持つ2次元のnp.array)
     def __init__(self, city):
         self.city = city
-        self.order = list(np.random.permutation(city.shape[0]))
+        self.order = list(np.random.permutation(city.shape[0])) #初期フローをランダムに生成
         x = self.city[:,0]
         y = self.city[:,1]
         self.distance_matrix = np.sqrt((x[:,np.newaxis] - x[np.newaxis, :]) ** 2 + 
-                                    (y[:,np.newaxis] - y[np.newaxis, :]) ** 2)
+                                    (y[:,np.newaxis] - y[np.newaxis, :]) ** 2) #cityの各接点間の距離を要素に持つ行列．
 
     def calculate_total_distace(self, order, distance_matrix):
         """Calculate total distance traveld for given visit order"""
-        idx_from = np.array(order)
-        idx_to = np.array(order[1:] + [order[0]])
+        idx_from = np.array(order) #出発点のリスト
+        idx_to = np.array(order[1:] + [order[0]]) #到達点のリスト
         distance_arr = distance_matrix[idx_from, idx_to]
 
         return np.sum(distance_arr)
@@ -42,9 +32,11 @@ class TSP:
     def calculate_2opt_exchange_cost(self, visit_order, i, j, distance_matrix):
         """Calculate the difference of cost by applying given 2-opt exchange"""
         n_cities = len(visit_order)
+        """a,b,c,d are nodes in the city, b is neighbor of a, and c is to d."""
         a,b = visit_order[i], visit_order[(i + 1) % n_cities]
         c,d = visit_order[j], visit_order[(j + 1) % n_cities]
 
+        """(a,b) + (c,d) と (a,c) + (b,d)を計算，比較．"""
         cost_before = distance_matrix[a,b] + distance_matrix[c,d]
         cost_after = distance_matrix[a,c] + distance_matrix[b,d]
 
@@ -52,9 +44,9 @@ class TSP:
     
     def apply_2opt_exchange(self, visit_order, i, j):
         """Apply 2-opt exchanging on viit order"""
-        tmp = visit_order[i + 1 : j + 1]
-        tmp.reverse()
-        visit_order[i + 1 : j + 1] = tmp
+        tmp = visit_order[i + 1 : j + 1] #iからjまでのパス
+        tmp.reverse() #iの次に訪れる点がjの時，全体の道順はi-j間を逆に進む．
+        visit_order[i + 1 : j + 1] = tmp #tmp に訪問順序iとjを入れ替えた値を保持し，visit_orderのiとjを入れ替える．
         return visit_order
 
     def improve_with_2opt(self, visit_order, distance_matrix):
@@ -85,7 +77,7 @@ class TSP:
 
         while True:
             improved  = improve_func(visit_order, distance_matrix)
-            if not improved:
+            if not improved: #not None -> True.
                 break
 
             visit_order = improved
@@ -102,7 +94,14 @@ class TSP:
         self.visualize_visit_order(improved, self.city)
         total_distance = self.calculate_total_distace(improved, self.distance_matrix)
         print('近傍探索適用後の総移動距離 = {}'.format(total_distance))
+
 def main():
+    N = 20
+    MAP_SIZE = 100
+
+    np.random.seed(10)
+    city_xy = np.random.rand(N, 2) * MAP_SIZE
+
     my_tsp = TSP(city_xy)
     my_tsp.solver()
 if __name__ == "__main__":
