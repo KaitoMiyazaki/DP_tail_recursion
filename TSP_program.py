@@ -98,6 +98,7 @@ class TSP: #city(到達地点のx,y座標を持つ2次元のnp.array)
         return visit_order
 
     def solver(self):
+        #randomな解
         self.visualize_visit_order(self.order, self.city)
         total_distance = self.calculate_total_distace(self.order, self.distance_matrix)
         print('初期解の総移動距離 = {}'.format(total_distance))
@@ -108,14 +109,19 @@ class TSP: #city(到達地点のx,y座標を持つ2次元のnp.array)
         total_distance = self.calculate_total_distace(tour, self.distance_matrix)
         print(f'greedy法適用後の総移動距離 = {total_distance}')
 
-        #近傍を計算
+        #初期解:random, 修正法：2-opt
         improved = self.local_search(self.order, self.distance_matrix, self.improve_with_2opt)
         self.visualize_visit_order(improved, self.city)
         total_distance = self.calculate_total_distace(improved, self.distance_matrix)
         print('近傍探索適用後の総移動距離 = {}'.format(total_distance))
 
+        #初期解：greedy-method, 修正法:2-opt
+        improved = self.local_search(tour, self.distance_matrix, self.improve_with_2opt)
+        self.visualize_visit_order(improved, self.city)
+        total_distance = self.calculate_total_distace(improved, self.distance_matrix)
+        print('greedy + 2-opt適用後の総移動距離 = {}'.format(total_distance))
 def main():
-    N = 20
+    N = 50
     MAP_SIZE = 100
 
     np.random.seed(10)
