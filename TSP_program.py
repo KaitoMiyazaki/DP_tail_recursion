@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 plt.style.use('ggplot')
 
 class TSP: #city(到達地点のx,y座標を持つ2次元のnp.array)
@@ -25,7 +26,7 @@ class TSP: #city(到達地点のx,y座標を持つ2次元のnp.array)
         x_arr = city_xy[:,0][route]
         y_arr = city_xy[:,1][route]
 
-        plt.figure(figsize=(4,4))
+        plt.figure(figsize=(6,6))
         plt.plot(x_arr, y_arr, 'o-')
         plt.show()
 
@@ -101,33 +102,49 @@ class TSP: #city(到達地点のx,y座標を持つ2次元のnp.array)
         #randomな解
         self.visualize_visit_order(self.order, self.city)
         total_distance = self.calculate_total_distace(self.order, self.distance_matrix)
-        print('初期解の総移動距離 = {}'.format(total_distance))
+        print('random解の総移動距離 = {}'.format(total_distance))
 
         #greedy-method による解
+        start1 = time.time()
         tour = self.solve_with_greedy(self.city)
+        elapsed_time1 = time.time() - start1
         self.visualize_visit_order(tour, self.city)
         total_distance = self.calculate_total_distace(tour, self.distance_matrix)
         print(f'greedy法適用後の総移動距離 = {total_distance}')
+        print(f'実行時間：{elapsed_time1}')
 
         #初期解:random, 修正法：2-opt
+        start2 = time.time()
         improved = self.local_search(self.order, self.distance_matrix, self.improve_with_2opt)
+        elapsed_time2 = time.time() - start2
         self.visualize_visit_order(improved, self.city)
         total_distance = self.calculate_total_distace(improved, self.distance_matrix)
         print('近傍探索適用後の総移動距離 = {}'.format(total_distance))
+        print(f'実行時間：{elapsed_time2}')
 
         #初期解：greedy-method, 修正法:2-opt
+        start3 = time.time()
         improved = self.local_search(tour, self.distance_matrix, self.improve_with_2opt)
+        elapsed_time3 = time.time() - start3
         self.visualize_visit_order(improved, self.city)
         total_distance = self.calculate_total_distace(improved, self.distance_matrix)
         print('greedy + 2-opt適用後の総移動距離 = {}'.format(total_distance))
+        print(f'実行時間：{elapsed_time3}')
+def read_input(filename):
+    with open(filename) as f:
+        cities = []
+        for line in f.readlines()[1:]:
+            xy = line.split(',')
+            cities.append([float(xy[0]), float(xy[1])])
+        return cities
+
 def main():
-    N = 50
-    MAP_SIZE = 100
+    # N = 50
+    # MAP_SIZE = 100
 
-    np.random.seed(10)
-    city_xy = np.random.rand(N, 2) * MAP_SIZE
-
-    my_tsp = TSP(city_xy)
+    # city_xy = np.random.rand(N, 2) * MAP_SIZE
+    city = np.array(read_input('city_data/input_5.csv'))
+    my_tsp = TSP(city)
     my_tsp.solver()
 if __name__ == "__main__":
     main()
