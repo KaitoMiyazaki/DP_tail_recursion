@@ -29,6 +29,19 @@ class TSP: #city(到達地点のx,y座標を持つ2次元のnp.array)
         plt.plot(x_arr, y_arr, 'o-')
         plt.show()
 
+    def solve_with_greedy(self, city):
+        N = len(city)
+        current_city = 0
+        unvisited_cities = set(range(1,N))
+        tour = [current_city]
+
+        while unvisited_cities:
+            next_city = min(unvisited_cities, key=lambda city: self.distance_matrix[current_city][city])
+            unvisited_cities.remove(next_city)
+            tour.append(next_city)
+            current_city = next_city
+        return tour
+
     def calculate_2opt_exchange_cost(self, visit_order, i, j, distance_matrix):
         """Calculate the difference of cost by applying given 2-opt exchange"""
         n_cities = len(visit_order)
@@ -88,6 +101,12 @@ class TSP: #city(到達地点のx,y座標を持つ2次元のnp.array)
         self.visualize_visit_order(self.order, self.city)
         total_distance = self.calculate_total_distace(self.order, self.distance_matrix)
         print('初期解の総移動距離 = {}'.format(total_distance))
+
+        #greedy-method による解
+        tour = self.solve_with_greedy(self.city)
+        self.visualize_visit_order(tour, self.city)
+        total_distance = self.calculate_total_distace(tour, self.distance_matrix)
+        print(f'greedy法適用後の総移動距離 = {total_distance}')
 
         #近傍を計算
         improved = self.local_search(self.order, self.distance_matrix, self.improve_with_2opt)
