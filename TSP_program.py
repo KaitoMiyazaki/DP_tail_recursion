@@ -28,10 +28,10 @@ class TSP: #city(到達地点のx,y座標を持つ2次元のnp.array)
         x_arr = city_xy[:,0][route]
         y_arr = city_xy[:,1][route]
 
-        plt.figure(figsize=(6,6))
+        plt.figure(figsize=(4,4))
         plt.plot(x_arr, y_arr, 'o-')
         plt.savefig(f'images/output_{self.num}/{name}.png')
-        plt.show()
+        #plt.show()
 
     def solve_with_greedy(self, city):
         N = len(city)
@@ -160,7 +160,7 @@ def main():
     # MAP_SIZE = 100
 
     # city_xy = np.random.rand(N, 2) * MAP_SIZE
-    number = 6
+    number = 5
     city = np.array(read_input(f'city_data/input_{number}.csv'))
     my_tsp = TSP(city, number)
     my_tsp.solver()
